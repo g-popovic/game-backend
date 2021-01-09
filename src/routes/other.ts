@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import User from '../models/user.model';
 import { signToken } from '../helpers/token';
+import { authUser } from '../middleware/auth';
 
 const router = Router();
 
@@ -20,8 +21,8 @@ router.post('/register', async (req, res) => {
 	}
 });
 
-router.get('/me', async (req, res) => {
-	res.sendStatus(200);
+router.get('/me', authUser, async (req, res) => {
+	res.send(await User.findById(req.userId));
 });
 
 export default router;

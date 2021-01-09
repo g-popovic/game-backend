@@ -12,7 +12,6 @@ export function signToken(user: IUser): string {
 	};
 
 	const token = jwt.sign(payload, process.env.JWT_SECRET!);
-	console.log(token);
 	return token;
 }
 
