@@ -30,23 +30,29 @@ router.get('/now', (req, res) => {
 
 router.get('/leaderboards', authUserNotStrict, async (req, res) => {
 	const isSignedIn = !!req.userId;
-	console.log(isSignedIn);
-	const [leaders, myPoints] = await Promise.all([
+
+	const [leaders, me] = await Promise.all([
 		User.aggregate([
 			{ $sort: { points: -1 } },
 			{ $limit: 10 },
 			{ $project: { name: true, points: true, _id: false } }
 		]),
-		isSignedIn ? User.findById(req.userId).select('-_id points') : null
+		isSignedIn ? User.findById(req.userId).select('-_id points name') : null
 	]);
 
 	for (let i = 0; i < leaders.length; i++) {
 		leaders[i].place = i + 1;
 	}
 
-	// Since the "points" field is indexed this should be fairly efficient
+	/* Check i'm in the top 10, in which case it's not required to make another trip to
+    the DB to get my place/rank */
+	const meInTop10 = leaders.find(el => el.name === me.name);
+
+	// Since the "points" field is indexed, a "count()" should be fairly efficient
 	const myPlace = isSignedIn
-		? (await User.count({ points: { $gt: myPoints.points } })) + 1
+		? meInTop10
+			? meInTop10.points
+			: (await User.count({ points: { $gt: me.place } })) + 1
 		: null;
 
 	res.json({

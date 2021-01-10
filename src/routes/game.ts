@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { authUser } from '../middleware/auth';
 import User from '../models/user.model';
-import mongoose from 'mongoose';
 const router = Router();
 
 router.post('/play', authUser, async (req, res) => {
@@ -41,16 +40,6 @@ router.post('/play', authUser, async (req, res) => {
 		points_added: points,
 		points_total: points + user.points
 	});
-
-	// This gets rid of the old games which are no longer needed
-	User.updateOne(
-		{
-			_id: req.userId
-		},
-		{
-			$pull: { recentGameDates: { $lte: lastHour } }
-		}
-	);
 });
 
 router.post('/claim_bonus', authUser, async (req, res) => {

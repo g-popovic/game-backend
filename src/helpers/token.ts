@@ -23,3 +23,7 @@ export function decryptToken(token: string): TokenContent | null {
 		return null;
 	}
 }
+
+export function sum(a: number, b: number): number {
+	return a + b;
+}

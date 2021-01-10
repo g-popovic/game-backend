@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 config();
 import express from 'express';
 import mongoose from 'mongoose';
+import './helpers/cronSetup';
 
 // Import routes
 import gameRoutes from './routes/game';
@@ -28,7 +29,9 @@ app.use('/game', gameRoutes);
 app.use('/', otherRoutes);
 
 // Listen on specified port
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
 	console.log('Server running on port ' + PORT);
 });
+
+export default app;
